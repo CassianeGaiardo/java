@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"br.edu.ifsc.javargexamples","l":"A"},{"p":"br.edu.ifsc.javargexamples","l":"Aextend"},{"p":"br.edu.ifsc.javargexamples","l":"AextendExtend"},{"l":"All Classes","url":"allclasses-index.html"},{"p":"br.edu.ifsc.javargexamples","l":"B"},{"p":"br.edu.ifsc.javargexamples","l":"C"},{"p":"br.edu.ifsc.javarg","l":"MainClass"}]

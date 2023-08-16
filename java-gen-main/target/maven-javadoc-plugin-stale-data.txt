@@ -1,0 +1,61 @@
+@options
+@packages
+-classpath
+'/home/attory/.m2/repository/com/github/javaparser/javaparser-symbol-solver-core/3.24.4/javaparser-symbol-solver-core-3.24.4.jar:/home/attory/.m2/repository/com/github/javaparser/javaparser-core/3.24.4/javaparser-core-3.24.4.jar:/home/attory/.m2/repository/org/javassist/javassist/3.29.0-GA/javassist-3.29.0-GA.jar:/home/attory/.m2/repository/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar:/home/attory/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/attory/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/attory/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/attory/.m2/repository/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.jar:/home/attory/.m2/repository/com/google/errorprone/error_prone_annotations/2.11.0/error_prone_annotations-2.11.0.jar:/home/attory/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'1.8'
+-sourcepath
+'/home/attory/Documents/Github/java-gen/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2022. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/home/attory/Documents/Github/java-gen/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'JavaSynthesis 1.0-SNAPSHOT API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' '/home/attory/Documents/Github/java-gen/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'JavaSynthesis 1.0-SNAPSHOT API'
+br.edu.ifsc.javarg
+br.edu.ifsc.javargexamples
+/home/attory/.m2/repository/com/github/javaparser/javaparser-symbol-solver-core/3.24.4/javaparser-symbol-solver-core-3.24.4.jar = 1664326533628
+/home/attory/.m2/repository/com/github/javaparser/javaparser-core/3.24.4/javaparser-core-3.24.4.jar = 1664326533796
+/home/attory/.m2/repository/org/javassist/javassist/3.29.0-GA/javassist-3.29.0-GA.jar = 1664326533744
+/home/attory/.m2/repository/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar = 1664326533984
+/home/attory/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar = 1664326532984
+/home/attory/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar = 1664326533420
+/home/attory/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar = 1664326533988
+/home/attory/.m2/repository/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.jar = 1664326534208
+/home/attory/.m2/repository/com/google/errorprone/error_prone_annotations/2.11.0/error_prone_annotations-2.11.0.jar = 1664326534188
+/home/attory/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar = 1664326534324
+/home/attory/Documents/Github/java-gen/src/main/java = 1666048705647
+/home/attory/Documents/Github/java-gen/target/site/apidocs/deprecated-list.html = 1666052871372
+/home/attory/Documents/Github/java-gen/target/site/apidocs/type-search-index.zip = 1666052871356
+/home/attory/Documents/Github/java-gen/target/site/apidocs/overview-tree.html = 1666052871336
+/home/attory/Documents/Github/java-gen/target/site/apidocs/element-list = 1666052871260
+/home/attory/Documents/Github/java-gen/target/site/apidocs/constant-values.html = 1666052871292
+/home/attory/Documents/Github/java-gen/target/site/apidocs/allpackages-index.html = 1666052871368
+/home/attory/Documents/Github/java-gen/target/site/apidocs/stylesheet.css = 1666052871384
+/home/attory/Documents/Github/java-gen/target/site/apidocs/script.js = 1666052871384
+/home/attory/Documents/Github/java-gen/target/site/apidocs/allclasses.html = 1666052871372
+/home/attory/Documents/Github/java-gen/target/site/apidocs/package-search-index.zip = 1666052871356
+/home/attory/Documents/Github/java-gen/target/site/apidocs/index-all.html = 1666052871360
+/home/attory/Documents/Github/java-gen/target/site/apidocs/index.html = 1666052871376
+/home/attory/Documents/Github/java-gen/target/site/apidocs/member-search-index.js = 1666052871356
+/home/attory/Documents/Github/java-gen/target/site/apidocs/overview-summary.html = 1666052871380
+/home/attory/Documents/Github/java-gen/target/site/apidocs/help-doc.html = 1666052871384
+/home/attory/Documents/Github/java-gen/target/site/apidocs/member-search-index.zip = 1666052871356
+/home/attory/Documents/Github/java-gen/target/site/apidocs/package-search-index.js = 1666052871352
+/home/attory/Documents/Github/java-gen/target/site/apidocs/type-search-index.js = 1666052871356
+/home/attory/Documents/Github/java-gen/target/site/apidocs/allclasses-index.html = 1666052871364
+/home/attory/Documents/Github/java-gen/target/site/apidocs/search.js = 1666052871388
