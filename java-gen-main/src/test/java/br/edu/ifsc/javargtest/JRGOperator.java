@@ -57,7 +57,6 @@ public class JRGOperator {
     Type t
   ) throws ClassNotFoundException {
     //String tp = t.asString();
-
     Arbitrary<Expression> e = mCore.genExpression(
       ctx,
       ReflectParserTranslator.reflectToParserType(t.toString())
@@ -67,7 +66,6 @@ public class JRGOperator {
       ctx,
       ReflectParserTranslator.reflectToParserType(t.toString())
     );
-
     return e.map(
       exp -> new BinaryExpr(exp, ex.sample(), genArithOperator().sample())
     );

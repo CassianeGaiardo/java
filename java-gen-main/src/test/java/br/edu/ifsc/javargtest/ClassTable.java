@@ -71,6 +71,8 @@ public class ClassTable {
         return candidatesMethod;
     }
 
+      
+    
     public List<Method> getConcreteCandidateMethods(String type)
             throws ClassNotFoundException {
         List<Method> candidatesMethod = new ArrayList<>();
@@ -78,7 +80,7 @@ public class ClassTable {
         for (String c : mImports) {
             List<Method> mthd = getClassMethods(c);
 
-            List<Method> collect = mthd// não podemos ter métodos abstratos aq
+            List<Method> collect = mthd// não abstrato
                     .stream()
                     .filter(m -> m.getReturnType().toString().equals(type) && !Modifier.isAbstract(m.getModifiers()))
                     .collect(Collectors.toList());
@@ -97,7 +99,7 @@ public class ClassTable {
             if (Class.forName(c).isInterface()) {
                 List<Method> mthd = getClassMethods(c);
 
-                List<Method> collect = mthd //que seja só 1 abstrato!!!
+                List<Method> collect = mthd 
                         .stream()
                         .filter(m -> m.getReturnType().toString().equals(type)
                         && Modifier.isAbstract(m.getModifiers()))
@@ -111,6 +113,8 @@ public class ClassTable {
         return candidatesMethod;
     }
 
+    
+    
     public boolean isFunctionalInterface(String name)
             throws ClassNotFoundException {
         List<Method> list = getInterfaceAbstractMethods(name);
@@ -126,9 +130,13 @@ public class ClassTable {
             throws ClassNotFoundException {
         Class c = Class.forName(name);
 
-        List<Method> list = new ArrayList<>(Arrays.asList(c.getDeclaredMethods()));
+        System.out.println(c.toGenericString());
 
-        return list.stream().filter(e -> Modifier.isAbstract(e.getModifiers())).collect(Collectors.toList());
+        List<Method> list = new ArrayList<>(
+                Arrays.asList(c.getDeclaredMethods()));
+
+        return list.stream().filter(e -> Modifier.isAbstract(e.getModifiers()))
+                .collect(Collectors.toList());
     }
 
     public List<Constructor> getCandidateConstructors(String type)
@@ -222,7 +230,6 @@ public class ClassTable {
     public List<Class> subTypes(String cname) throws ClassNotFoundException {
         List<Class> list = new ArrayList<>();
 
-        System.out.println("subtypes: cname " + cname);
 
         Class c = Class.forName(cname);
 
@@ -267,7 +274,7 @@ public class ClassTable {
     }*/
     public List<Class> subTypes2(String cname) throws ClassNotFoundException {
         List<Class> list = new ArrayList<>();
-
+        //System.out.println("teste:"+ cname);
         Class c = Class.forName(cname);
         for (String cl : this.mImports) {
             List<Class> st = superTypes(cl);
@@ -278,7 +285,7 @@ public class ClassTable {
             }
         }
         list.add(c); // testar 
-        System.out.println("--- SUBTYPE:"+ c);
+        //System.out.println("--- SUBTYPE:"+ c);
         return list;
         
     }

@@ -55,25 +55,83 @@ public class JRGCore {
         mOperator = new JRGOperator(mCT, mBase, this);
 
         //mCtx = new HashMap<String, String>();
-        mValidNames = Arrays.asList("a", "b", "c", "d", "e", "f", "g","h","i","j","k","l");
+        mValidNames = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l");
 
         mFuel = FUEL_START;
     }
-    
-    @Provide
+
+  /*  @Provide
     public Arbitrary<Expression> genExpressionLambda(Map<String, String> ctx, Type t) {
         Arbitrary<Expression> e;
         List<Arbitrary<Expression>> cand = new ArrayList<>();
-        try {
+           try {
            // if (!t.isPrimitiveType()) {
-                System.out.println("subtype: " + t.asString()); //function
-
+               // System.out.println("subtype: " + t); //function
+                    
+              //  t = ReflectParserTranslator.reflectToParserType("int");//function
+                
                 t = ReflectParserTranslator.reflectToParserType(
-                        Arbitraries.of(mCT.subTypes2(t.asString())).sample().toString());//function
+                        Arbitraries.of(mCT.subTypes2(t.toString())).sample().toString());//function*/
+                
+                // o subtype recebe uma classe, e retorna classes. t é tipo exemplo int
+                
+                
+                
+              //  System.out.println("t:"+t);
            // }
-        } catch (ClassNotFoundException ex) {
+     /*   } catch (ClassNotFoundException ex) {
             System.out.println("Erro obtendo subtipo!");
         }
+         
+        try {
+            if (mFuel > 0) { // Permite a recursão até certo ponto
+                mFuel--;
+
+                if (t.toString().equals(PrimitiveType.booleanType().asString())) {
+                   // System.out.println("0");
+                    cand.add(
+                            Arbitraries.oneOf(
+                                    mOperator.genLogiExpression(ctx),
+                                    mOperator.genRelaExpression(ctx)
+                            )
+                    );
+                }
+
+                // Candidatos de tipos primitivos
+                if (t.isPrimitiveType()) {
+                    cand.add(Arbitraries.oneOf(mBase.genPrimitiveType(t.asPrimitiveType())));
+                }
+
+                if (t.isPrimitiveType() && mBase.isNumericType(t)) {
+                    cand.add(Arbitraries.oneOf(mOperator.genArithExpression(ctx, t)));
+               //     System.out.println("2");
+                }
+
+                // Verifica se existem atributos candidatos
+                if (!mCT.getCandidateFields(t.asString()).isEmpty()) {
+               //     System.out.println("3");
+                    cand.add(Arbitraries.oneOf(genAttributeAccess(ctx, t)));
+                    
+
+                }
+
+                //Verifica se existem candidados methods
+                if (!mCT.getCandidateMethods(t.asString()).isEmpty()) {
+                    cand.add(Arbitraries.oneOf(genMethodInvokation(ctx, t)));
+                    //essencial
+                }
+            }
+        } catch (ClassNotFoundException ex1) {
+            throw new RuntimeException("Error: class not found!");
+        }
+        // System.out.println("genExpression::end");
+        return Arbitraries.oneOf(cand);
+    }
+*/
+    @Provide
+    public Arbitrary<Expression> genExpression(Map<String, String> ctx, Type t) {
+        Arbitrary<Expression> e;
+        List<Arbitrary<Expression>> cand = new ArrayList<>();
 
         try {
             if (mFuel > 0) { // Permite a recursão até certo ponto
@@ -90,132 +148,72 @@ public class JRGCore {
 
                 // Candidatos de tipos primitivos
                 if (t.isPrimitiveType()) {
-                    cand.add(Arbitraries.oneOf(mBase.genPrimitiveType(t.asPrimitiveType())));
-                   // System.out.println("1");
+                    cand.add(
+                            Arbitraries.oneOf(mBase.genPrimitiveType(t.asPrimitiveType()))
+                    );
                 }
 
                 if (t.isPrimitiveType() && mBase.isNumericType(t)) {
                     cand.add(Arbitraries.oneOf(mOperator.genArithExpression(ctx, t)));
-                    //System.out.println("2");
+                }
+
+                // Se não for tipo primitivo
+                if (!t.isPrimitiveType()) {
+                    //Candidatos de construtores
+                    cand.add(Arbitraries.oneOf(genObjectCreation(ctx, t)));
                 }
 
                 // Verifica se existem atributos candidatos
                 if (!mCT.getCandidateFields(t.asString()).isEmpty()) {
                     cand.add(Arbitraries.oneOf(genAttributeAccess(ctx, t)));
-                    //System.out.println("3");
-
                 }
 
                 //Verifica se existem candidados methods
                 if (!mCT.getCandidateMethods(t.asString()).isEmpty()) {
                     cand.add(Arbitraries.oneOf(genMethodInvokation(ctx, t)));
-                    //essencial
-
                 }
+
+                // Verifica se existem candidados cast
+                if (!t.isPrimitiveType() && !mCT.subTypes2(t.asString()).isEmpty()) {
+                    cand.add(Arbitraries.oneOf(genUpCast(ctx, t)));
+                }
+
+                // Verifica se existem candidados Var
+                if (ctx.containsValue(t.asString())) {
+                    cand.add(Arbitraries.oneOf(genVar(ctx, t)));
+                }
+            } else { // Não permite aprofundar a recursão
+                if (t.isPrimitiveType()) {
+                    cand.add(
+                            Arbitraries.oneOf(mBase.genPrimitiveType(t.asPrimitiveType()))
+                    );
+                }
+
+                if (!t.isPrimitiveType()) {
+                    cand.add(Arbitraries.oneOf(genObjectCreation(ctx, t)));
+                }
+
+                if (ctx.containsValue(t.asString())) {
+                    cand.add(Arbitraries.oneOf(genVar(ctx, t)));
+                }
+                //if (t.toString().equals(PrimitiveType.booleanType().asString())) {
+                //    cand.add(Arbitraries.oneOf(mOperator.genLogiExpression(ctx),
+                //    mOperator.genRelaExpression(ctx)));
+                //}
+
+                //if (t.isPrimitiveType() && mBase.isNumericType(t)){
+                //   cand.add(Arbitraries.oneOf(mOperator.genArithExpression(ctx,t)));
+                //}
             }
         } catch (ClassNotFoundException ex1) {
             throw new RuntimeException("Error: class not found!");
         }
-        // System.out.println("genExpression::end");
+
         return Arbitraries.oneOf(cand);
     }
-    
 
-    
-    
-    
-    
-    
     @Provide
-  public Arbitrary<Expression> genExpression(Map<String, String> ctx, Type t) {
-    Arbitrary<Expression> e;
-    List<Arbitrary<Expression>> cand = new ArrayList<>();
-
-    try {
-      if (mFuel > 0) { // Permite a recursão até certo ponto
-        mFuel--;
-
-        if (t.toString().equals(PrimitiveType.booleanType().asString())) {
-          cand.add(
-            Arbitraries.oneOf(
-              mOperator.genLogiExpression(ctx),
-              mOperator.genRelaExpression(ctx)
-            )
-          );
-        }
-
-        // Candidatos de tipos primitivos
-        if (t.isPrimitiveType()) {
-          cand.add(
-            Arbitraries.oneOf(mBase.genPrimitiveType(t.asPrimitiveType()))
-          );
-        }
-
-        if (t.isPrimitiveType() && mBase.isNumericType(t)) {
-          cand.add(Arbitraries.oneOf(mOperator.genArithExpression(ctx, t)));
-        }
-
-        // Se não for tipo primitivo
-        if (!t.isPrimitiveType()) {
-          //Candidatos de construtores
-          cand.add(Arbitraries.oneOf(genObjectCreation(ctx, t)));
-        }
-
-        // Verifica se existem atributos candidatos
-        if (!mCT.getCandidateFields(t.asString()).isEmpty()) {
-          cand.add(Arbitraries.oneOf(genAttributeAccess(ctx, t)));
-        }
-
-        //Verifica se existem candidados methods
-        if (!mCT.getCandidateMethods(t.asString()).isEmpty()) {
-          cand.add(Arbitraries.oneOf(genMethodInvokation(ctx, t)));
-        }
-
-        // Verifica se existem candidados cast
-        if (!t.isPrimitiveType() && !mCT.subTypes2(t.asString()).isEmpty()) {
-          cand.add(Arbitraries.oneOf(genUpCast(ctx, t)));
-        }
-
-        // Verifica se existem candidados Var
-        if (ctx.containsValue(t.asString())) {
-          cand.add(Arbitraries.oneOf(genVar(ctx, t)));
-        }
-      } else { // Não permite aprofundar a recursão
-        if (t.isPrimitiveType()) {
-          cand.add(
-            Arbitraries.oneOf(mBase.genPrimitiveType(t.asPrimitiveType()))
-          );
-        }
-
-        if (!t.isPrimitiveType()) {
-          cand.add(Arbitraries.oneOf(genObjectCreation(ctx, t)));
-        }
-
-        if (ctx.containsValue(t.asString())) {
-          cand.add(Arbitraries.oneOf(genVar(ctx, t)));
-        }
-        //if (t.toString().equals(PrimitiveType.booleanType().asString())) {
-        //    cand.add(Arbitraries.oneOf(mOperator.genLogiExpression(ctx),
-        //    mOperator.genRelaExpression(ctx)));
-        //}
-
-        //if (t.isPrimitiveType() && mBase.isNumericType(t)){
-        //   cand.add(Arbitraries.oneOf(mOperator.genArithExpression(ctx,t)));
-        //}
-      }
-    } catch (ClassNotFoundException ex1) {
-      throw new RuntimeException("Error: class not found!");
-    }
-
-    return Arbitraries.oneOf(cand);
-  }
-
-
-    
-    
-    
-    @Provide
-    public Arbitrary<NodeList<Expression>> genExpressionList (
+    public Arbitrary<NodeList<Expression>> genExpressionList(
             Map<String, String> ctx,
             List<Type> types
     ) {
@@ -251,7 +249,6 @@ public class JRGCore {
         //System.out.println("----"+t);
         constrs = mCT.getClassConstructors(t.asString());
         Arbitrary<Constructor> c = Arbitraries.of(constrs);
-       
 
         Constructor constr = c.sample();
 
@@ -287,9 +284,6 @@ public class JRGCore {
                 .map(el -> new ObjectCreationExpr(null, t.asClassOrInterfaceType(), el));
     }
 
-    
-    
-    
     @Provide
     public Arbitrary<FieldAccessExpr> genAttributeAccess(
             Map<String, String> ctx,
@@ -345,7 +339,8 @@ public class JRGCore {
                 "genMethodInvokation:" + ":t = " + t.asString()
         );
 
-        methods = genConcreteCandidatesMethods(t.asString());// AQUI MUDEI PRA MÉTODOS CONCRETOS!!! // o método gerado ERA function!!
+        methods = genConcreteCandidatesMethods(t.asString());// AQUI MUDEI PRA MÉTODOS CONCRETOS!!! 
+                                                            // o método gerado ERA function!!
 
         Method method = methods.sample();
 
@@ -355,10 +350,10 @@ public class JRGCore {
 
         JRGLog.showMessage(
                 JRGLog.Severity.MSG_DEBUG,
-                "genObjectCreation:" + ":method " + method.toString() 
+                "genObjectCreation:" + ":method " + method.toString()
         );
-        
-        Arbitrary<Expression> e = genExpression( 
+
+        Arbitrary<Expression> e = genExpression(
                 ctx,
                 ReflectParserTranslator.reflectToParserType(
                         method.getDeclaringClass().getName()
@@ -378,8 +373,7 @@ public class JRGCore {
                 .map(el -> new MethodCallExpr(e.sample(), method.getName(), el));
     }
 
-    
-        @Provide
+    @Provide
     public Arbitrary<MethodCallExpr> genLambdaInvokation(
             Map<String, String> ctx,
             Type t
@@ -399,7 +393,31 @@ public class JRGCore {
 
         methods = genLambdaCandidatesMethods(t.asString());//// AQUI OS LAMBDA CANDIDATE METHODS
         Method method = methods.sample();
-
+        
+      
+        
+        
+        //GAMBIARRA////////////////////////////////////////////////////////////////
+        System.out.println("method valor:: "+method.toString());
+        System.out.println("teste2: "+ method.getClass().toString());
+        System.out.println("teste3: "+ method.getName());
+        System.out.println("teste4:"+ t.asString());
+        
+        /*Class<?> functionalInterface = getFunctionalInterface(method);
+        System.out.println("Nome da Interface Funcional: " + functionalInterface.getName());
+*/
+        
+        int ultimo = method.toString().lastIndexOf('.');
+        
+        int penultimo = method.toString().lastIndexOf('.', ultimo - 1);
+        
+        String interfa = method.toString().substring(penultimo+1, ultimo);
+       
+        System.out.println("\n"+ interfa);
+        
+        //////////////////////////////////////////////////////////////////////////
+        
+        
         Class[] params = method.getParameterTypes();
 
         List<Class> ps = Arrays.asList(params);
@@ -408,18 +426,12 @@ public class JRGCore {
                 JRGLog.Severity.MSG_DEBUG,
                 "genObjectCreation:" + ":method " + method.toString()
         );
-     
-         Arbitrary<LambdaExpr> e = genLambdaExpr(ctx, ReflectParserTranslator.reflectToParserType(
-                        method.getDeclaringClass().getName()//erro aq construir expressão aq
-                )
-       );
-         //fazer um filtro se se for numérico ele não faz nada?
-         // não aceitar mais numérico?
-         //  vamos precisar criar outro genexpression pra controlar isso?
-         
-       
 
-
+        Arbitrary<LambdaExpr> e = genLambdaExpr(ctx, ReflectParserTranslator.reflectToParserType(
+                method.getDeclaringClass().getName())
+        );
+        
+        
         List<Type> types = ps
                 .stream()
                 .map(
@@ -432,16 +444,12 @@ public class JRGCore {
         return genExpressionList(ctx, types)
                 .map(el -> new MethodCallExpr(e.sample(), method.getName(), el));
     }
-    
-    
-    
-    
-    
+
     
     @Provide
     public Arbitrary<NameExpr> genVar(Map<String, String> ctx, Type t) {
         JRGLog.showMessage(JRGLog.Severity.MSG_XDEBUG, "genVar::inicio");
-
+        System.out.println("tipo:"+ t);
         List<NameExpr> collect = ctx
                 .entrySet()
                 .stream()
@@ -476,46 +484,36 @@ public class JRGCore {
                 )
         );
     }
-    //testar tudo e resolver erros.
+    //mValidNames.remove(name); // 
 
     @Provide
     public Arbitrary<LambdaExpr> genLambdaExpr(Map<String, String> ctx, Type t)
             throws ClassNotFoundException {
-
+        System.out.println("core lambdaExpr: "+ t);
         List<Method> absMethods = mCT.getInterfaceAbstractMethods(t.asString());//recebe os métodos abstratos
 
         Method sign = absMethods.get(0); // se é funcional só tem um
-
-        List<Class> types = Arrays.asList(sign.getParameterTypes()); // tipos do método
-
+        
+        List<Class> types = Arrays.asList(sign.getParameterTypes());//tipos dométodo
+        
         NodeList<Parameter> params = new NodeList<>();
-        //System.out.println("ctx: "+ ctx);
+        
         for (Class type : types) {
             String name = Arbitraries.of(mValidNames).sample();// gera um nome
-
             ctx.put(name, type.getName());
-
-            //mValidNames.remove(name); // 
             params.add(new Parameter(
                     ReflectParserTranslator.reflectToParserType(
                             type.getName()), name));
         }
-       // System.out.println(sign.getReturnType().toString());
-
         Arbitrary<Expression> e;
 
         try {
-        System.out.println("TESTE LAMBDA EXPR: ctx "+ ctx+" t: "+ReflectParserTranslator.reflectToParserType(
-                            sign.getReturnType().toString()));
-
-            // ctx e tipo para a e expressão
-//            e = genExpression(ctx,
-//                    ReflectParserTranslator.reflectToParserType(
-//                            sign.getReturnType().toString()
-//                    ));//recebe o contexto e o tipo de retorno do método abstrato
-
-            e = genExpressionLambda(ctx, ReflectParserTranslator.reflectToParserType(sign.getReturnType().toString()));
-
+            //e = genExpressionLambda(ctx, ReflectParserTranslator.reflectToParserType(sign.getReturnType().toString()));
+          System.out.println("TESTE LAMBDA EXPR: ctx "+ ctx+" t: "+ReflectParserTranslator.reflectToParserType(sign.getReturnType().getName()));
+            e = genExpression(ctx,
+                    ReflectParserTranslator.reflectToParserType(
+                            sign.getReturnType().getName()
+                    ));//recebe o contexto e o tipo de retorno do método abstrato
         } catch (Exception ex) {
             System.out.println("genLambdaExpr::error ==> " + ex.getMessage());
             ex.printStackTrace();
@@ -524,9 +522,7 @@ public class JRGCore {
         return e.map(obj -> new LambdaExpr(params, obj));
     }
 
-    
-    
-    
+  
     @Provide
     public Arbitrary<Method> genConcreteCandidatesMethods(String type)
             throws ClassNotFoundException {
@@ -537,30 +533,17 @@ public class JRGCore {
 
         return Arbitraries.of(candidatesMethods);
     }
-    
-    
-    
-    
-    
+
     public Arbitrary<Method> genLambdaCandidatesMethods(String type)
             throws ClassNotFoundException {
         List<Method> candidatesMethods;
 
         candidatesMethods = mCT.getLambdaCandidateMethods(type);
-        System.out.println("gen: " + type);
+        //System.out.println("gen: " + type);
 
         return Arbitraries.of(candidatesMethods);
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
     @Provide
     public Arbitrary<Method> genCandidatesMethods(String type)
             throws ClassNotFoundException {
@@ -571,13 +554,6 @@ public class JRGCore {
         return Arbitraries.of(candidatesMethods);
     }
 
-    
-    
-    
-    
-    
-    
-    
     @Provide
     public Arbitrary<Field> genCandidatesField(String type)
             throws ClassNotFoundException {
@@ -609,10 +585,10 @@ public class JRGCore {
     }
 
     @Provide
-    public Arbitrary<Expression> genExpressionOperator   (
+    public Arbitrary<Expression> genExpressionOperator(
             Map<String, String> ctx,
             Type t
-    ) throws ClassNotFoundException{
+    ) throws ClassNotFoundException {
         Arbitrary<Expression> e;
 
         List<Arbitrary<Expression>> cand = new ArrayList<>();
@@ -637,7 +613,7 @@ public class JRGCore {
             Type t,
             VariableDeclarator e,
             Arbitrary<LiteralExpr> ex
-    ) throws ClassNotFoundException{
+    ) throws ClassNotFoundException {
         List<Arbitrary<Expression>> cand = new ArrayList<>();
 
         if (t.toString().equals(PrimitiveType.intType().asString())) {
@@ -654,7 +630,7 @@ public class JRGCore {
             Type t,
             VariableDeclarator e,
             Arbitrary<LiteralExpr> ex
-    ) throws ClassNotFoundException{
+    ) throws ClassNotFoundException {
         List<Arbitrary<Expression>> cand = new ArrayList<>();
 
         if (t.toString().equals(PrimitiveType.intType().asString())) {

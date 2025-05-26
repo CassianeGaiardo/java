@@ -5,6 +5,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -20,9 +21,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 import net.jqwik.api.*;
 import net.jqwik.api.lifecycle.BeforeTry;
 import org.junit.Test;
+
 
 /**
  *
@@ -136,7 +139,7 @@ public class MainTests {
    * then use 'net.jqwik.api.Arbitraries' to fetch all possible types
    *
      */
-    // @Example
+     //@Example
     boolean checkGenPrimitiveType() {
         Arbitrary<PrimitiveType.Primitive> t = mBase.primitiveTypes();
 
@@ -229,7 +232,7 @@ public class MainTests {
            // System.out.println("depois do genLambdaInvokation");
 
             if (e != null) {
-                System.out.println("\n \n \nLAMBDA GERADO:: " + e.sample().toString());
+                System.out.println("\nLAMBDA GERADO:: " + e.sample().toString()+"\n \n \n");
             } else {
                 JRGLog.showMessage(
                         Severity.MSG_ERROR,
@@ -254,11 +257,11 @@ public class MainTests {
    * In fact, should be called `checkSuperTypes()`
    *
      */
-    // @Example
+     //@Example
     boolean checkSubTypes2() throws ClassNotFoundException {
         JRGLog.showMessage(Severity.MSG_XDEBUG, "checkSubTypes" + "::inicio");
 
-        List<Class> b = mCT.subTypes2("br.edu.ifsc.javargexamples.B");
+        List<Class> b = mCT.subTypes2("br.edu.ifsc.javargexamples.A");
         //List<Class> b = mCT.subTypes2("java.util.function.DoubleToIntFunction");
         b.forEach(
                 i -> {
@@ -297,7 +300,8 @@ public class MainTests {
 
         return true;
     }
-
+  
+    
     //@Example
     //@Property(tries = 10)
     boolean checkGenConcreteCandidatesMethods() throws ClassNotFoundException {
@@ -318,7 +322,7 @@ public class MainTests {
         return true;
     }
 
-    //@Property(tries = 10) //SÓ EXISTE UM MÉTODO LAMBDA DISPONÍVEL NO MOMENTO... pq?
+    //@Property(tries = 10) 
     //@Example
     boolean checkGenLambdaCandidateMethods() throws ClassNotFoundException {
         JRGLog.showMessage(
@@ -338,29 +342,58 @@ public class MainTests {
         return true;
     }
 
+    
+    
+    
+    
     /*
    * 
    * Generate Lambda expressions from `JRGCore.java`
    * 
      */
-     //@Example
-    // @Property(tries = 10)
+    // @Example
+     //@Property(tries = 10)
     boolean checkGenLambdaExpr() throws ClassNotFoundException {
         JRGLog.showMessage(Severity.MSG_XDEBUG, "checkGenLambdaExpr::inicio");
 
         ClassOrInterfaceType fi = new ClassOrInterfaceType();
-
-        fi.setName("java.util.function.DoubleToIntFunction");
-
-        Arbitrary<LambdaExpr> e = mCore.genLambdaExpr(mCtx, fi);
-
-        System.out.println("checkGenLambdaExpr: Expr gerada: " + e.sample());
-
-        JRGLog.showMessage(Severity.MSG_XDEBUG, "checkGenLambdaExpr::fim");
+        
+        // Selecionar aleatoriamente uma interface funcional da lista de imports
+        fi.setName("java.util.function.Function");
+        
+        ClassOrInterfaceType typeArg1 = new ClassOrInterfaceType();
+        
+        typeArg1.setName("Integer");
+        
+        ClassOrInterfaceType typeArg2 = new ClassOrInterfaceType();
+        
+        typeArg2.setName("Double");
+        
+        fi.setTypeArguments(typeArg1, typeArg2);
+        
+         System.out.println(mCT.getInterfaceAbstractMethods("java.util.function.Function"));        
+        
+        List<Method> list = new ArrayList<>(
+                Arrays.asList(fi.getClass().getDeclaredMethods()));
+        
+         System.out.println(list);
+        
+//        Arbitrary<LambdaExpr> e = mCore.genLambdaExpr(mCtx, fi);
+//
+//        System.out.println("checkGenLambdaExpr: Expr gerada: " + e.sample());
+//
+//        JRGLog.showMessage(Severity.MSG_XDEBUG, "checkGenLambdaExpr::fim");
 
         return true;
     }
 
+    
+    
+    
+    
+    
+    
+    
     // @Example
     boolean checkIsFunctionalInterface() throws ClassNotFoundException {
         if (mCT.isFunctionalInterface("java.util.function.DoubleToIntFunction")) {
@@ -444,7 +477,7 @@ public class MainTests {
         );
 
         Arbitrary<Constructor> b = mCore.genCandidatesConstructors(
-                "br.edu." + "ifsc.javargexamples.B"
+                "br.edu.ifsc.javargexamples.B"
         );
 
         System.out.println("Candidatos Constructors: " + b.sample());
@@ -482,6 +515,38 @@ public class MainTests {
         return true;
     }
 
+  /*  //@Property(tries = 10)
+    boolean checkGenExpressionLambda() {
+        JRGLog.showMessage(Severity.MSG_XDEBUG, "checkGenExpression::inicio");
+
+        ClassOrInterfaceType fi = new ClassOrInterfaceType();
+
+        fi.setName("br.edu.ifsc.javargexamples.A");
+
+        
+        // troquei de reflectParser para classe fi.
+        
+        try {
+            Arbitrary<Expression> e = mCore.genExpressionLambda(
+                    mCtx,
+                    fi
+            );
+            System.out.println("Expressão gerada: " + e.sample());
+        } catch (Exception ex) {
+            System.out.println("Erro: " + ex.getMessage());
+            return false;
+        }
+
+        JRGLog.showMessage(Severity.MSG_XDEBUG, "checkGenExpression::fim");
+
+        return true;
+    }
+    */
+    
+    
+    
+    
+    
     /*
    *
    * Generate a statement for accessing an attribute of type 'int'
@@ -536,7 +601,7 @@ public class MainTests {
    * !ERROR "Jwqik empty set of values"
    *
      */
-    // @Example
+     //@Example
     boolean checkGenVar() throws ClassNotFoundException {
         JRGLog.showMessage(Severity.MSG_XDEBUG, "checkGenVar" + "::inicio");
 

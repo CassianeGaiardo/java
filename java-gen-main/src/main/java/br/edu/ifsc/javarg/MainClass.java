@@ -7,6 +7,11 @@ import br.edu.ifsc.javargexamples.B;
 import br.edu.ifsc.javargexamples.C;
 
 import java.util.function.DoubleToIntFunction;
+import java.util.function.Supplier;
+//import java.util.function.IntUnaryOperator;
+
+
+
 
 /**
  *
